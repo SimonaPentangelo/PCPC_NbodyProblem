@@ -185,6 +185,7 @@ gcc body_creation.c -o body_creation.out
 ./body_creation.c [numeroBodies]
 ```
 Verrà generato un file il cui nome è nel formato **[numeroBodies]bodies.txt**, che sarà necessario per eseguire il programma **nbody.c**. Può essere anche inserito il valore del seme per la fase di randomizzazione dei bodies (se omesso, il valore di default è 3).
+Qualora si volesse evitare questo step, nella cartella **fileBodiesBenchmark** sono presenti i file che sono stati utilizzati dirante la fase di benchmark.
 ```bash
 mpicc nbody.c -o nbody.out -lm
 
