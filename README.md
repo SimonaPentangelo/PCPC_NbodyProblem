@@ -257,6 +257,6 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 ___
 ## Conclusioni  
 
-Come è possibile osservare dai grafici e dai valori ottenuti, l'algoritmo presenta buoni valori in termini di efficienza, mantenendosi circa sul 99% per due e quattro vCPUs e scendendo solo fino all'85% circa con quattordici core,  e di tempo di esecuzione,  ottenendo una buona riduzione nel tempo di esecuzione nel momento in cui vengono utilizzati 2 core e mostrando un continuo decremento (seppur man mano sempre minore), per quanto riguarda la strong scalability.
+Come è possibile osservare dai grafici e dai valori ottenuti, l'algoritmo presenta buoni valori in termini di efficienza, mantenendosi circa sul 99% per due e quattro vCPUs e scendendo solo fino all'85% circa con quattordici core,  e di tempo di esecuzione,  ottenendo una buona riduzione nel tempo di esecuzione nel momento in cui vengono utilizzati 2 core e mostrando un continuo decremento al crescere delle vCPUs (seppur man mano sempre minore), per quanto riguarda la strong scalability.
 Per quanto riguarda invece la weak scalability, i risultati non sono molto soddisfacenti, in quanto vi è una crescita costante in termini di tempo di esecuzione e un calo delle performance non indifferente: nel passare a 2 vCPUs con 40000 bodies, il calo è del 50% circa, mentre al crescere dei core (e dei bodies di conseguenza) la distanza tra le percentuali ottenute risulta essere sempre minore.
 ___
