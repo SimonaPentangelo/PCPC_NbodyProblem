@@ -22,6 +22,7 @@ ___
     - [Strong Scaling con 20000 body](#strong-scaling-con-20000-body)
     - [Strong Scaling con 30000 body](#strong-scaling-con-30000-body)
     - [Weak Scaling](#weak-scaling)
+  - [Conclusioni](#conclusioni)
 ___
 ## Introduzione
 Il problema degli N-body consiste nel conoscere la posizione e la velocità di un insieme di corpi, i quali si influenzano tra loro, in un intervallo di tempo. Questo genere di simulazioni è molto utilizzato in astrofisica per predirre il movimento di un gruppo di corpi celesti, in base alle influenze gravitazionali.
@@ -223,7 +224,7 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 | vCPUs | 1 | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | Tempo | 78,53 | 39,28 | 19,65 | 14,66 | 11,19 | 8,93 | 7,51 | 6,42 | 5,67 |
-| Efficienza | 100,00% | 99,92% | 99,84% |89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
+| Efficienza | 100,00% | 99,92% | 99,84% | 89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
 
 *Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
@@ -235,7 +236,7 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 | vCPUs | 1 | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | Tempo | 176,70 | 88,42 | 44,24 | 33,08 | 24,73 | 19,97 | 16,76 | 14,71 | 12,69 |
-| Efficienza | 100,00% | 99,92% | 99,84% |89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
+| Efficienza | 100,00% | 99,92% | 99,84% | 89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
 
 *Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
@@ -247,10 +248,15 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 | vCPUs | 1 | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | Tempo | 0,79 | 1,57 | 3,15 | 4,75 | 6,34 | 7,94 | 9,53 | 11,10 | 12,70 |
-| Efficienza | 100,00% | 50,03% | 24,97% | 16,58% | 16,58% | 9,91% | 8,26% | 7,09% | 6,19% |
+| Efficienza | 100,00% | 50,03% | 24,97% | 16,58% | 12,42% | 9,91% | 8,26% | 7,09% | 6,19% |
   
 
 *Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
 ![WeakScaling](grafici/weakscaling1.png)  |  ![WeakScaling](grafici/weakscaling2.png) 
+___
+## Conclusioni  
+
+Come è possibile osservare dai grafici e dai valori ottenuti, l'algoritmo presenta buoni valori in termini di efficienza, mantenendosi circa sul 99% per due e quattro vCPUs e scendendo solo fino all'85% circa con quattordici core,  e di tempo di esecuzione,  ottenendo una buona riduzione nel tempo di esecuzione nel momento in cui vengono utilizzati 2 core e mostrando un continuo decremento (seppur man mano sempre minore), per quanto riguarda la strong scalability.
+Per quanto riguarda invece la weak scalability, i risultati non sono molto soddisfacenti, in quanto vi è una crescita costante in termini di tempo di esecuzione e un calo delle performance non indifferente: nel passare a 2 vCPUs con 40000 bodies, il calo è del 50% circa, mentre al crescere dei core (e dei bodies di conseguenza) la distanza tra le percentuali ottenute risulta essere sempre minore.
 ___
