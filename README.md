@@ -223,9 +223,9 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 | vCPUs | 1 | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | Tempo | 78,53 | 39,28 | 19,65 | 14,66 | 11,19 | 8,93 | 7,51 | 6,42 | 5,67 |
-| Speedup | 100,00% | 99,92% | 99,84% |89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
+| Efficienza | 100,00% | 99,92% | 99,84% |89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
 
-*Tempo medio di esecuzione (in secondi)*           |  *Speedup ottenuto (in percentuale)*
+*Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
 ![StrongScaling](grafici/strongScaling20000.png)  |  ![StrongScaling](grafici/speedup20000.png)  
 
@@ -235,9 +235,9 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 | vCPUs | 1 | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 |
 | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | Tempo | 176,70 | 88,42 | 44,24 | 33,08 | 24,73 | 19,97 | 16,76 | 14,71 | 12,69 |
-| Speedup | 100,00% | 99,92% | 99,84% |89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
+| Efficienza | 100,00% | 99,92% | 99,84% |89,04% | 89,30% | 88,47% | 89,04% | 85,79% | 87,00% |  
 
-*Tempo medio di esecuzione (in secondi)*           |  *Speedup ottenuto (in percentuale)*
+*Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
 ![StrongScaling](grafici/strongScaling30000.png)  |  ![StrongScaling](grafici/speedup30000.png) 
   
