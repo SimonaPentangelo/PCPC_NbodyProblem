@@ -229,7 +229,7 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 
 *Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
-![StrongScaling](grafici/strongScaling20000.png)  |  ![StrongScaling](grafici/speedup20000.png)  
+![StrongScaling](grafici/strongScaling20000.png)  |  ![StrongScaling](grafici/strongScaling20000(1).png)  
 
   
  ### Strong Scaling con 30000 body  
@@ -241,7 +241,7 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 
 *Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
-![StrongScaling](grafici/strongScaling30000.png)  |  ![StrongScaling](grafici/speedup30000.png) 
+![StrongScaling](grafici/strongScaling30000.png)  |  ![StrongScaling](grafici/strongScaling30000(1).png) 
   
 
 ### Weak Scaling  
