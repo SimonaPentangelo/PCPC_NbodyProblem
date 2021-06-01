@@ -16,6 +16,8 @@ ___
     - [Update dei body](#update-dei-body)
     - [Fase di comunicazione](#fase-di-comunicazione)
   - [Istruzioni per l'esecuzione](#istruzioni-per-lesecuzione)
+    - [File di partenza](#file-di-partenza)
+    - [Esecuzione di nbody.c](#esecuzione-di-nbody.c)
   - [Correttezza](#correttezza)
     - [Risultati](#risultati)
   - [Benchmarks](#benchmarks)
@@ -31,7 +33,7 @@ Per una simulazione sono necessari un insieme di corpi, per cui vengono fornite 
 ___
 ## Soluzione proposta
 Per risolvere questo problema, è stata proposta la seguente soluzione:
-  + Un programma in C per creare il file di partenza con il numero desiderato di body.
+  + Un programma in C per creare il file di partenza con il numero desiderato di bodies.
   + Un programma in C con le funzioni per:
     - Leggere e memorizzare i valori presenti nel file di partenza e randomizzarli tramite un seme;
     - Dividere i body in base al numero di processi;
@@ -46,12 +48,12 @@ ___
 
 ### Definizione del tipo body  
 
-Per gestire agilmente l'insieme dei body all'interno del programma, è stata creata una struttura, così da poter allocare lo spazio necessario e scorrere facilmente gli elementi in fase di update.  
+Per gestire agilmente l'insieme dei bodies all'interno del programma, è stata creata una struttura, così da poter allocare lo spazio necessario e scorrere facilmente gli elementi in fase di update.  
 
 ```c
 typedef struct { float x, y, z, vx, vy, vz; } Body;
 ```  
-Per poter inviare tali elementi usando **MPI**, è stato necessario creare il tipo `bodytype`, specificando i tipi corrispondenti dei sei elementi contenuti nella struttura (ovvero `MPI_FLOAT`).
+Per poter inviare tali elementi usando **MPI**, è stato necessario creare il tipo `bodytype`, specificando i tipi corrispondenti dei sei elementi contenuti nella struttura `Body` (ovvero `MPI_FLOAT`).
 ```c
 MPI_Datatype bodytype, oldtype[1]; //per definire il nuovo tipo
 oldtype[0] = MPI_FLOAT;
@@ -66,7 +68,8 @@ MPI_Type_commit(&bodytype);
 ```
 ### Fasi preliminari  
 
-Per avere un insieme di body di partenza, è stato utilizzato il programma **body_creation.c**, il quale genera un file contenente la quantità di body creata nella prima riga e per ogni riga, sei differenti valori (che serviranno a generare i valori dei sei campi del tipo `Body`).
+Per avere un insieme di bodies di partenza, è stato utilizzato il programma **body_creation.c**, il quale genera un file contenente la quantità di bodies creata nella prima riga e per ogni riga, sei differenti valori (che serviranno a generare i valori dei sei campi del tipo `Body`).  
+Nel codice sottostante, `nBodies` è la variabile utilizzata per memorizzare la quantità di bodies che verranno gestiti, mentre `allBodies` viene utilizzato per memorizzare l'insieme degli elementi.  
 
 ```c
 int getSize(FILE* fp) {
@@ -86,7 +89,8 @@ int getBodies(FILE* fp, int nBodies, Body *allBodies) {
 }
 ```  
 
-Una volta ottenuti tutti i body, viene stabilita la quantità di body che dovrà essere gestita da un singolo core, basandosi sul numero di processori, sul numero di body e sull'eventuale resto.
+Una volta ottenuti tutti i bodies, viene stabilita la quantità di elementi che dovrà essere gestita da un singolo core, basandosi sul numero di processori, sul numero di bodies e sull'eventuale resto.  
+Con `numPerProc`, ogni core memorizza la quantità di bodies che gli è stata assegnata.
 
 ```c
 numPerProc = nBodies / world_size;
@@ -96,7 +100,7 @@ if(myrank < resto) {
 }
 ```  
 
-Per utilizzare permettere la comunicazione (ripresa più avanti), è stato necessario creare gli array `counts` e `displs` per rendere noto alla root quanti body vengono inviati da ogni processore ed il displacement necessario per combinare i dati in `allBodies`.
+Per permettere la comunicazione (ripresa più avanti), è stato necessario creare gli array `counts` e `displs` per rendere noto alla root quanti elementi vengono inviati da ogni processore ed il displacement necessario per combinare i dati in `allBodies`.
 
 ```c
 void fillCounts(int counts[], int resto, int nBodies, int ws) {
@@ -116,7 +120,7 @@ void fillDispls(int displs[], int counts[], int ws) {
     }
 }
 ```  
-L'array `displs`, oltre che per la comunicazione, è stato anche utilizzato per assicurarsi che il puntatore `subBodies` facesse riferimento alla parte di array interessata dal processore (identificato tramite `myrank`).
+L'array `displs`, oltre che per la comunicazione, è stato anche utilizzato per assicurarsi che il puntatore `subBodies` facesse riferimento alla parte di array `allBodies` interessata dal processore (identificato tramite `myrank`).
 
 ```c
 void getSubBodies(Body *subBodies, int numPerProc, Body *allBodies, int displs[], int myrank) {
@@ -131,7 +135,7 @@ void getSubBodies(Body *subBodies, int numPerProc, Body *allBodies, int displs[]
 ### Update dei body
 
 `bodyForce` è la funzione per calcolare e aggiornare i valori della velocità relativamente ai tre assi dei body.  
-Poichè la funzione viene utilizzata in base al sottoinsieme di body assegnati ad un determinato processore, il puntatore `p` fa riferimento al sottinsieme, mentre `a` fa riferimento alla totalià dei body, i quali vengono aggiornati per ogni processre dopo ogni iterazione. Il valore `n` corrisponde al numero di body presenti in `p`, mentre `dim` è il numero totale di body.  
+Poichè la funzione viene utilizzata in base al sottoinsieme di body assegnati ad un determinato processore, il puntatore `p` fa riferimento al sottinsieme, mentre `a` fa riferimento alla totalià dei bodies. Il valore `n` corrisponde al numero di body presenti in `p`, mentre `dim` è il numero totale di elementi.  
 Questa funzione, per ogni nodo del sottinsieme, calcola i nuovi valori della velocità sui tre assi, considerando le posizioni dei corpi.
 ```c
 void bodyForce(Body *p, float dt, int n, Body* a, int dim) {
@@ -155,7 +159,7 @@ void bodyForce(Body *p, float dt, int n, Body* a, int dim) {
     }
 }
 ```
-Una volta aggiornati i valori delle velocità, il sottinsieme di body, rappresentato dal puntatore `data`, utilizza le velocità aggiornate per calcolare le nuove posizioni.
+Una volta aggiornati i valori delle velocità, il sottinsieme di bodies, rappresentato dal puntatore `data`, utilizza le velocità aggiornate per calcolare le nuove posizioni.
 ```c
 void updateBodies(Body *data, int size, float dt) {
     for (int i = 0 ; i < size; i++) { // integrate position
@@ -168,7 +172,8 @@ void updateBodies(Body *data, int size, float dt) {
 
 ### Fase di comunicazione
 
-Ogni processore quindi, calcola le velocià e le posizioni dei propri body. Per poter proseguire alla prossima iterazione è necessario aggiornare `allBodies`, per fare ciò, viene utilizzata la funzione `MPI_Allgatherv`, la quale fa una gather dei `subBodies` e combina i dati in `allBodies`, rendendo le modifiche disponibili a tutti.
+Ogni processore quindi, calcola le velocià e le posizioni dei propri elementi. Per poter proseguire alla prossima iterazione è necessario aggiornare `allBodies`; per fare ciò viene utilizzata la funzione `MPI_Allgatherv`, la quale fa una gather dei `subBodies` e combina i dati in `allBodies`, rendendo le modifiche disponibili a tutti.  
+In questo contesto, sono necessari gli array `counts` e `displs` per poter gestire correttamente i dati raccolti.
 ```c
 for(int j = 0; j < nIters; j++) {
         bodyForce(subBodies, dt, numPerProc, allBodies, nBodies);
@@ -178,24 +183,34 @@ for(int j = 0; j < nIters; j++) {
 ```
 ___
 ## Istruzioni per l'esecuzione  
+
+### File di partenza  
+
+Qualora si volesse evitare questo step, nella cartella **fileBodiesBenchmark** sono presenti i file che sono stati utilizzati durante la fase di benchmark e altri file più piccoli.  
 Per eseguire correttamente la simulazione, è necessario compilare ed eseguire il programma **body_creation.c**, specificando la quantità di body che si intende utilizzare (se omesso, il valore di default è 30000). 
 ```bash
 gcc body_creation.c -o body_creation.out  
 
 ./body_creation.c [numeroBodies]
 ```
-Verrà generato un file il cui nome è nel formato **[numeroBodies]bodies.txt**, che sarà necessario per eseguire il programma **nbody.c**. Può essere anche inserito il valore del seme per la fase di randomizzazione dei bodies (se omesso, il valore di default è 3).  
-Qualora si volesse evitare questo step, nella cartella **fileBodiesBenchmark** sono presenti i file che sono stati utilizzati durante la fase di benchmark e altri file più piccoli.
+Verrà generato un file il cui nome è nel formato **[numeroBodies]bodies.txt**, che sarà necessario per eseguire il programma **nbody.c**.  
+
+### Esecuzione di nbody.c  
+
+I comandi sottostanti, permettono di compilare ed eseguire **nbody.c**.  
+Per la corretta esecuzione, è necessario uno dei file generati tramite **body_creation.c**, si può inserire anche il valore del seme per la fase di randomizzazione dei bodies (se omesso, il valore di default è 3).  
 ```bash
 mpicc nbody.c -o nbody.out -lm
 
 mpirun --allow-run-as-root --mca btl_vader_single_copy_mechanism none -np [numeroProcessi] nbody.out [nomeFile] [seed]
 ```
-Durante l'esecuzione, verrà generato un file nel formato **[numeroBodies]inFile.txt** per visualizzare i body generati, mentre al termine verrà stampato il tempo impegato per le iterazioni sui body e verrà generato un file  **[numeroBodies]outFile.txt** per visualizzare i valori aggiornati dei body.
-___
-## Correttezza
-Per dimostrare la correttezza dell'algoritmo, è stato utilizzato un file di partenza di soli dieci body, così da poter visualizzare facilmente i risultati ottenuti con uno, due o più processori.  
-Le immagini sottostanti ripostano il file di partenza ottenuto in seguito alla randomizzazione (con seme di default) e file di output dopo le dieci iterazioni.  
+Durante l'esecuzione, verrà generato un file nel formato **[numeroBodies]inFile.txt** per visualizzare i body generati, mentre al termine verrà stampato il tempo impegato per le iterazioni sui body e verrà generato un file  **[numeroBodies]outFile.txt** per visualizzare i valori aggiornati dei bodies.
+___  
+
+## Correttezza  
+
+Per dimostrare la correttezza dell'algoritmo, è stato utilizzato un file di partenza di soli 10 body, così da poter visualizzare facilmente i risultati ottenuti con 1, 2 o più processori.  
+Le immagini sottostanti ripostano il file di partenza ottenuto in seguito alla randomizzazione (con seme di default) e file di output dopo le 10 iterazioni.  
 Nonostante la variazione del numero di processi, avendo lo stesso file di input generato da **body_creation.c**, vengono prodotti gli stessi risultati.  
 
 ### Risultati
@@ -213,12 +228,13 @@ Nonostante la variazione del numero di processi, avendo lo stesso file di input 
 ![inFile](risultati/10infile5proc.png)  |  ![outFile](risultati/10outfile5proc.png)
 
 
-___
+___  
+
 ## Benchmarks  
 
-Per osservare strong e weak scaling dell'algoritmo parallelo, è stato utilizzato un cluster di t2.xlarge.  
-Per valutare lo strong scaling, sono state utilizzate fino a quattro istanze (utilizzando quindi da uno a sedici core) e sono stati fatti due test utilizzando un numero di body differenti (ventimila e trentamila).  
-Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo che ogni core dovesse lavorare su duemila body (quindi partendo da un core con duemila body fino a sedici core con trentaduemila body).
+Per osservare strong e weak scaling dell'algoritmo parallelo, è stato utilizzato un cluster di **t2.xlarge**.  
+Per valutare lo strong scaling, sono state utilizzate fino a 4 istanze (utilizzando quindi da 1 a 16 core) e sono stati fatti due test utilizzando un numero di elementi differenti (20000 e 30000).  
+Per valutare il weak scaling, sono state usate 4 istanze, facendo in modo che ogni core dovesse lavorare su 2000 bodies (quindi partendo da un core con 2000 elementi fino a 16 core con 32000 body).
 
 ### Strong Scaling con 20000 body  
 
@@ -255,7 +271,8 @@ Per valutare il weak scaling, sono state usate quattro istanze, facendo in modo 
 *Tempo medio di esecuzione (in secondi)*           |  *Efficienza (in percentuale)*
 :-------------------------:|:-------------------------:
 ![WeakScaling](grafici/weakscaling1.png)  |  ![WeakScaling](grafici/weakscaling2.png) 
-___
+___  
+
 ## Conclusioni  
 
 Come è possibile osservare dai grafici e dai valori ottenuti, l'algoritmo presenta buoni valori in termini di efficienza, mantenendosi circa sul 99% per due e quattro vCPUs e scendendo solo fino all'85% circa con quattordici core,  e di tempo di esecuzione,  ottenendo una buona riduzione nel tempo di esecuzione nel momento in cui vengono utilizzati 2 core e mostrando un continuo decremento al crescere delle vCPUs (seppur man mano sempre minore), per quanto riguarda la strong scalability.
