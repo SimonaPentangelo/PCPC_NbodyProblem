@@ -120,6 +120,24 @@ void fillDispls(int displs[], int counts[], int ws) {
     }
 }
 ```  
+Prima di assegnare ad ogni core il proprio sottinsieme, vengono randomizzati i valori ottenuti tramite il file, con un `seed`.  
+
+```c
+void randomizeBodies(Body *data, int n, int seed)
+{
+  srand(seed);
+  for (int i = 0; i < n; i++)
+  {
+    data[i].x = data[i].x * (rand() / (float)RAND_MAX) - 1.0f;
+    data[i].y = data[i].y * (rand() / (float)RAND_MAX) - 1.0f;
+    data[i].z = data[i].z * (rand() / (float)RAND_MAX) - 1.0f;
+    data[i].vx = data[i].vx * (rand() / (float)RAND_MAX) - 1.0f;
+    data[i].vy = data[i].vy * (rand() / (float)RAND_MAX) - 1.0f;
+    data[i].vz = data[i].vz * (rand() / (float)RAND_MAX) - 1.0f;
+  }
+}
+```  
+
 L'array `displs`, oltre che per la comunicazione, è stato anche utilizzato per assicurarsi che il puntatore `subBodies` facesse riferimento alla parte di array `allBodies` interessata dal processore (identificato tramite `myrank`).
 
 ```c
